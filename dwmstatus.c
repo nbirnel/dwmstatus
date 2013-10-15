@@ -102,9 +102,9 @@ main(void)
 		return 1;
 	}
 
-	for (;;sleep(90)) {
+	for (;;sleep(1)) {
 		avgs = loadavg();
-		tmlosangeles = mktimes("Wk %W %a %d %b %H:%M %Z %Y", tzpacific);
+		tmlosangeles = mktimes("Wk %W %a %d %b %H:%M:%S %Z %Y", tzpacific);
 
 		status = smprintf("L:%s %s",
 				avgs, tmlosangeles);
