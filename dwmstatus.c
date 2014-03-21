@@ -60,13 +60,13 @@ getbattery(){
     char s = '?';
     FILE *fp = NULL;
     if ((fp = fopen(BATT_NOW, "r"))) {
-        fscanf(fp, "%ld\n", &now);
+        fscanf(fp, "%ld", &now);
         fclose(fp);
         fp = fopen(BATT_FULL, "r");
-        fscanf(fp, "%ld\n", &full);
+        fscanf(fp, "%ld", &full);
         fclose(fp);
         fp = fopen(BATT_STATUS, "r");
-        fscanf(fp, "%s\n", status);
+        fscanf(fp, "%s", status);
         fclose(fp);
         if (strcmp(status,"Charging") == 0)
             s = '+';
@@ -86,7 +86,7 @@ getwifi(){
     char *status = malloc(sizeof(char)*12);
     FILE *fp = NULL;
     if ((fp = fopen(WIFI, "r"))) {
-        fscanf(fp, "%s\n", status);
+        fscanf(fp, "%s", status);
         fclose(fp);
         return smprintf("%s", status);
     }
