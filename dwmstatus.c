@@ -1,3 +1,9 @@
+#define BATT_NOW        "/sys/class/power_supply/BAT0/energy_now"
+#define BATT_FULL       "/sys/class/power_supply/BAT0/energy_full"
+#define BATT_STATUS       "/sys/class/power_supply/BAT0/status"
+
+#include <errno.h>
+
 #define _BSD_SOURCE
 #include <unistd.h>
 #include <stdio.h>
@@ -44,6 +50,32 @@ void
 settz(char *tzname)
 {
 	setenv("TZ", tzname, 1);
+}
+
+char *
+getbattery(){
+    long lnum1, lnum2 = 0;
+    char *status = malloc(sizeof(char)*12);
+    char s = '?';
+    FILE *fp = NULL;
+    if ((fp = fopen(BATT_NOW, "r"))) {
+        fscanf(fp, "%ld\n", &lnum1);
+        fclose(fp);
+        fp = fopen(BATT_FULL, "r");
+        fscanf(fp, "%ld\n", &lnum2);
+        fclose(fp);
+        fp = fopen(BATT_STATUS, "r");
+        fscanf(fp, "%s\n", status);
+        fclose(fp);
+        if (strcmp(status,"Charging") == 0)
+            s = '+';
+        if (strcmp(status,"Discharging") == 0)
+            s = '-';
+        if (strcmp(status,"Full") == 0)
+            s = '=';
+        return smprintf("%c%ld%%", s,(lnum1/(lnum2/100)));
+    }
+    else return smprintf("");
 }
 
 char *
@@ -96,6 +128,7 @@ main(void)
 	char *status;
 	char *avgs;
 	char *tmlosangeles;
+    char *bat;
 
 	if (!(dpy = XOpenDisplay(NULL))) {
 		fprintf(stderr, "dwmstatus: cannot open display.\n");
@@ -104,12 +137,14 @@ main(void)
 
 	for (;;sleep(1)) {
 		avgs = loadavg();
+        bat = getbattery();
 		tmlosangeles = mktimes("W %W D %j %H:%M:%S %Z %a %d-%b-%Y", tzpacific);
 
-		status = smprintf("L:%s %s",
-				avgs, tmlosangeles);
+		status = smprintf("B: %s L:%s %s",
+				bat, avgs, tmlosangeles);
 		setstatus(status);
 		free(avgs);
+		free(bat);
 		free(tmlosangeles);
 		free(status);
 	}
