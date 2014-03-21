@@ -54,15 +54,15 @@ settz(char *tzname)
 
 char *
 getbattery(){
-    long lnum1, lnum2 = 0;
+    long now, full = 0;
     char *status = malloc(sizeof(char)*12);
     char s = '?';
     FILE *fp = NULL;
     if ((fp = fopen(BATT_NOW, "r"))) {
-        fscanf(fp, "%ld\n", &lnum1);
+        fscanf(fp, "%ld\n", &now);
         fclose(fp);
         fp = fopen(BATT_FULL, "r");
-        fscanf(fp, "%ld\n", &lnum2);
+        fscanf(fp, "%ld\n", &full);
         fclose(fp);
         fp = fopen(BATT_STATUS, "r");
         fscanf(fp, "%s\n", status);
@@ -73,7 +73,7 @@ getbattery(){
             s = '-';
         if (strcmp(status,"Full") == 0)
             s = '=';
-        return smprintf("%c%ld%%", s,(lnum1/(lnum2/100)));
+        return smprintf("%c%ld%%", s,(now/(full/100)));
     }
     else return smprintf("");
 }
