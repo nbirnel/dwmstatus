@@ -1,6 +1,7 @@
 #define BATT_NOW        "/sys/class/power_supply/BAT0/energy_now"
 #define BATT_FULL       "/sys/class/power_supply/BAT0/energy_full"
 #define BATT_STATUS       "/sys/class/power_supply/BAT0/status"
+#define WIFI       "/sys/class/net/wlan0/operstate"
 
 #include <errno.h>
 
@@ -79,6 +80,20 @@ getbattery(){
 }
 
 char *
+
+getwifi(){
+    /* FIXME I don't know what I'm doing with malloc */
+    char *status = malloc(sizeof(char)*12);
+    FILE *fp = NULL;
+    if ((fp = fopen(WIFI, "r"))) {
+        fscanf(fp, "%s\n", status);
+        fclose(fp);
+        return smprintf("%s", status);
+    }
+    else return smprintf("");
+}
+
+char *
 mktimes(char *fmt, char *tzname)
 {
 	char buf[129];
@@ -126,9 +141,10 @@ int
 main(void)
 {
 	char *status;
+    char *wifi;
+    char *bat;
 	char *avgs;
 	char *tmlosangeles;
-    char *bat;
 
 	if (!(dpy = XOpenDisplay(NULL))) {
 		fprintf(stderr, "dwmstatus: cannot open display.\n");
@@ -138,13 +154,15 @@ main(void)
 	for (;;sleep(1)) {
 		avgs = loadavg();
         bat = getbattery();
+        wifi = getwifi();
 		tmlosangeles = mktimes("W %W D %j %H:%M:%S %Z %a %d-%b-%Y", tzpacific);
 
-		status = smprintf("B: %s L:%s %s",
-				bat, avgs, tmlosangeles);
+		status = smprintf("W: %s B: %s L:%s %s",
+				wifi, bat, avgs, tmlosangeles);
 		setstatus(status);
-		free(avgs);
+		free(wifi);
 		free(bat);
+		free(avgs);
 		free(tmlosangeles);
 		free(status);
 	}
