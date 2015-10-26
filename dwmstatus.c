@@ -140,7 +140,7 @@ main(void)
 	for (;;sleep(1)) {
         bat = getbattery();
         wifi = getwifi();
-		tmlosangeles = mktimes("W %W D %j %H:%M:%S %Z %a %d-%b-%Y", tzpacific);
+		tmlosangeles = mktimes("W %W D %j %H:%M:%S %Z %a %Y-%m-%d", tzpacific);
 
 		status = smprintf("W: %s B: %s %s",
 				wifi, bat, tmlosangeles);
