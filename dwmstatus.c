@@ -1,6 +1,6 @@
-#define BATT_NOW        "/sys/class/power_supply/BAT0/energy_now"
-#define BATT_FULL       "/sys/class/power_supply/BAT0/energy_full"
-#define BATT_STATUS       "/sys/class/power_supply/BAT0/status"
+#define BATT_NOW        "/sys/class/power_supply/BAT1/energy_now"
+#define BATT_FULL       "/sys/class/power_supply/BAT1/energy_full"
+#define BATT_STATUS       "/sys/class/power_supply/BAT1/status"
 #define WIFI       "/sys/class/net/wlan0/operstate"
 
 #include <errno.h>
