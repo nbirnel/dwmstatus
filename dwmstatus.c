@@ -124,26 +124,12 @@ setstatus(char *str)
 	XSync(dpy, False);
 }
 
-char *
-loadavg(void)
-{
-	double avgs[3];
-
-	if (getloadavg(avgs, 3) < 0) {
-		perror("getloadavg");
-		exit(1);
-	}
-
-	return smprintf("%.2f %.2f %.2f", avgs[0], avgs[1], avgs[2]);
-}
-
 int
 main(void)
 {
 	char *status;
     char *wifi;
     char *bat;
-	char *avgs;
 	char *tmlosangeles;
 
 	if (!(dpy = XOpenDisplay(NULL))) {
@@ -152,17 +138,15 @@ main(void)
 	}
 
 	for (;;sleep(1)) {
-		avgs = loadavg();
         bat = getbattery();
         wifi = getwifi();
 		tmlosangeles = mktimes("W %W D %j %H:%M:%S %Z %a %d-%b-%Y", tzpacific);
 
-		status = smprintf("W: %s B: %s L:%s %s",
-				wifi, bat, avgs, tmlosangeles);
+		status = smprintf("W: %s B: %s %s",
+				wifi, bat, tmlosangeles);
 		setstatus(status);
 		free(wifi);
 		free(bat);
-		free(avgs);
 		free(tmlosangeles);
 		free(status);
 	}
