@@ -1,7 +1,7 @@
-#define BATT_NOW        "/sys/class/power_supply/BAT1/energy_now"
-#define BATT_FULL       "/sys/class/power_supply/BAT1/energy_full"
-#define BATT_STATUS       "/sys/class/power_supply/BAT1/status"
-#define WIFI       "/sys/class/net/wlan0/operstate"
+#define BATT_NOW        "/sys/class/power_supply/BAT0/charge_now"
+#define BATT_FULL       "/sys/class/power_supply/BAT0/charge_full"
+#define BATT_STATUS       "/sys/class/power_supply/BAT0/status"
+#define WIFI       "/sys/class/net/wlp1s0/operstate"
 
 #include <errno.h>
 
@@ -20,6 +20,7 @@
 #include <X11/Xlib.h>
 
 char *tzpacific = "America/Los_Angeles";
+char *tzutc = "Etc/UTC";
 
 static Display *dpy;
 
@@ -131,6 +132,7 @@ main(void)
     char *wifi;
     char *bat;
 	char *tmlosangeles;
+	char *tmutc;
 
 	if (!(dpy = XOpenDisplay(NULL))) {
 		fprintf(stderr, "dwmstatus: cannot open display.\n");
@@ -140,14 +142,16 @@ main(void)
 	for (;;sleep(1)) {
         bat = getbattery();
         wifi = getwifi();
-		tmlosangeles = mktimes("W %W D %j %H:%M:%S %Z %a %Y-%m-%d", tzpacific);
+		tmlosangeles = mktimes("%H:%M:%S %Z %a %Y-%m-%d", tzpacific);
+		tmutc = mktimes("%H:%M:%S %Z", tzutc);
 
-		status = smprintf("W: %s B: %s %s",
-				wifi, bat, tmlosangeles);
+		status = smprintf("W: %s B: %s %s %s",
+				wifi, bat, tmlosangeles, tmutc);
 		setstatus(status);
 		free(wifi);
 		free(bat);
 		free(tmlosangeles);
+		free(tmutc);
 		free(status);
 	}
 
